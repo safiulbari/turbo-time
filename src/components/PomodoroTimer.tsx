@@ -82,51 +82,41 @@ export default function PomodoroTimer() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-lg">
-        {/* Header */}
-        <div className="text-center mb-8 animate-fade-in-up">
-          <h1 className="text-4xl md:text-5xl font-bold gradient-text mb-3">
-            FocusFlow
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Master your productivity with focused work sessions
-          </p>
-        </div>
-
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <div className="w-full max-w-sm">
         {/* Tabs */}
-        <div className="flex gap-3 mb-8 p-2 rounded-3xl glass-effect animate-fade-in-up">
+        <div className="flex gap-2 mb-6 p-1.5 rounded-2xl glass-effect">
           <button
             onClick={() => handleTabChange('work')}
             disabled={isActive}
-            className={`tab-button flex-1 flex items-center justify-center gap-2 ${
+            className={`tab-button flex-1 flex items-center justify-center gap-2 py-3 text-sm ${
               selectedTab === 'work' ? 'tab-active' : 'tab-inactive'
             } ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Zap className="w-5 h-5" />
+            <Zap className="w-4 h-4" />
             <span>Focus</span>
-            <span className="text-sm opacity-70">25min</span>
+            <span className="text-xs opacity-70">25m</span>
           </button>
           
           <button
             onClick={() => handleTabChange('break')}
             disabled={isActive}
-            className={`tab-button flex-1 flex items-center justify-center gap-2 ${
+            className={`tab-button flex-1 flex items-center justify-center gap-2 py-3 text-sm ${
               selectedTab === 'break' ? 'tab-active' : 'tab-inactive'
             } ${isActive ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            <Coffee className="w-5 h-5" />
+            <Coffee className="w-4 h-4" />
             <span>Break</span>
-            <span className="text-sm opacity-70">5min</span>
+            <span className="text-xs opacity-70">5m</span>
           </button>
         </div>
 
         {/* Main Timer Card */}
-        <div className="timer-card p-8 md:p-10 text-center animate-float">
+        <div className="timer-card p-6 text-center">
           {/* Session Status */}
-          <div className="mb-6">
+          <div className="mb-4">
             <div className={`
-              inline-flex items-center gap-3 px-6 py-3 rounded-full 
+              inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
               backdrop-blur-sm border transition-all duration-500
               ${sessionType === 'work' 
                 ? 'bg-purple-500/20 border-purple-400/30 text-purple-300' 
@@ -135,54 +125,54 @@ export default function PomodoroTimer() {
             `}>
               {sessionType === 'work' ? (
                 <>
-                  <Target className="w-5 h-5" />
-                  <span className="font-semibold">Focus Session</span>
+                  <Target className="w-4 h-4" />
+                  <span className="font-medium">Focus Session</span>
                 </>
               ) : (
                 <>
-                  <Coffee className="w-5 h-5" />
-                  <span className="font-semibold">Break Time</span>
+                  <Coffee className="w-4 h-4" />
+                  <span className="font-medium">Break Time</span>
                 </>
               )}
             </div>
           </div>
 
           {/* Timer Display */}
-          <div className="relative mb-8">
+          <div className="relative mb-6 flex justify-center">
             <CircularProgress 
               progress={progress} 
               sessionType={sessionType}
-              size={280}
+              size={220}
             />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
-                <div className={`text-5xl md:text-6xl font-bold mb-2 transition-all duration-300 ${
+                <div className={`text-3xl sm:text-4xl font-bold mb-1 transition-all duration-300 ${
                   isActive ? 'animate-bounce-gentle' : ''
                 }`}>
                   {formatTime(timeLeft)}
                 </div>
-                <div className="text-sm text-muted-foreground uppercase tracking-wide">
-                  {isActive ? 'In Progress' : 'Ready to Start'}
+                <div className="text-xs text-muted-foreground uppercase tracking-wide">
+                  {isActive ? 'In Progress' : 'Ready'}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Controls */}
-          <div className="flex gap-4 justify-center mb-8">
+          <div className="flex gap-3 justify-center mb-4">
             <Button
               onClick={handleStartPause}
-              className={`btn-primary ${isActive ? 'animate-pulse-glow' : ''}`}
-              size="lg"
+              className={`btn-primary flex-1 max-w-32 ${isActive ? 'animate-pulse-glow' : ''}`}
+              size="default"
             >
               {isActive ? (
                 <>
-                  <Pause className="w-6 h-6 mr-2" />
+                  <Pause className="w-4 h-4 mr-2" />
                   Pause
                 </>
               ) : (
                 <>
-                  <Play className="w-6 h-6 mr-2" />
+                  <Play className="w-4 h-4 mr-2" />
                   Start
                 </>
               )}
@@ -191,34 +181,31 @@ export default function PomodoroTimer() {
             <Button
               onClick={handleReset}
               variant="outline"
-              className="btn-secondary"
-              size="lg"
+              className="btn-secondary px-4"
+              size="default"
             >
-              <RotateCcw className="w-5 h-5 mr-2" />
-              Reset
+              <RotateCcw className="w-4 h-4" />
             </Button>
           </div>
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mt-8 animate-fade-in-up">
-          <div className="stats-card text-center">
-            <Trophy className="w-8 h-8 mx-auto mb-3 text-yellow-400" />
-            <div className="text-sm text-muted-foreground mb-1">
-              Completed Sessions
+          {/* Compact Stats */}
+          <div className="flex items-center justify-between text-center px-2">
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-yellow-400" />
+              <div>
+                <div className="text-lg font-bold gradient-text">{sessionCount}</div>
+                <div className="text-xs text-muted-foreground">Sessions</div>
+              </div>
             </div>
-            <div className="text-3xl font-bold gradient-text">
-              {sessionCount}
-            </div>
-          </div>
-          
-          <div className="stats-card text-center">
-            <Target className="w-8 h-8 mx-auto mb-3 text-primary" />
-            <div className="text-sm text-muted-foreground mb-1">
-              Current Session
-            </div>
-            <div className="text-lg font-semibold text-foreground capitalize">
-              {sessionType} {sessionCount + 1}
+            
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-primary" />
+              <div>
+                <div className="text-sm font-medium text-foreground capitalize">
+                  {sessionType} {sessionCount + 1}
+                </div>
+                <div className="text-xs text-muted-foreground">Current</div>
+              </div>
             </div>
           </div>
         </div>
