@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import PomodoroTimer from '@/components/PomodoroTimer';
-import TodoList, { Task } from '@/components/TodoList';
+import { useState } from "react";
+import PomodoroTimer from "@/components/PomodoroTimer";
+import TodoList, { Task } from "@/components/TodoList";
 
 const Index = () => {
   const [currentTask, setCurrentTask] = useState<Task | undefined>();
@@ -11,42 +11,45 @@ const Index = () => {
 
   const handleWorkSessionComplete = (taskId: string) => {
     // Update the task's pomodoro count in localStorage
-    const savedTasks = localStorage.getItem('pomodoro-tasks');
+    const savedTasks = localStorage.getItem("pomodoro-tasks");
     if (savedTasks) {
       try {
         const tasks: Task[] = JSON.parse(savedTasks);
-        const updatedTasks = tasks.map(task => 
-          task.id === taskId 
+        const updatedTasks = tasks.map((task) =>
+          task.id === taskId
             ? { ...task, pomodoroCount: task.pomodoroCount + 1 }
             : task
         );
-        localStorage.setItem('pomodoro-tasks', JSON.stringify(updatedTasks));
-        
+        localStorage.setItem("pomodoro-tasks", JSON.stringify(updatedTasks));
+
         // Update current task if it's the active one
         if (currentTask?.id === taskId) {
-          setCurrentTask({ ...currentTask, pomodoroCount: currentTask.pomodoroCount + 1 });
+          setCurrentTask({
+            ...currentTask,
+            pomodoroCount: currentTask.pomodoroCount + 1,
+          });
         }
       } catch (error) {
-        console.error('Error updating task:', error);
+        console.error("Error updating task:", error);
       }
     }
   };
 
   return (
     <div className="min-h-screen p-4 flex items-center justify-center">
-      <div className="w-full max-w-6xl mx-auto">
+      <div className="w-full max-w-8xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
           {/* Timer Section */}
-          <div className="flex-shrink-0 w-full lg:w-auto">
-            <PomodoroTimer 
+          <div className="flex-shrink-0 w-full lg:w-[400px]">
+            <PomodoroTimer
               currentTask={currentTask}
               onWorkSessionComplete={handleWorkSessionComplete}
             />
           </div>
-          
+
           {/* Todo List Section */}
           <div className="flex-shrink-0 w-full lg:w-80">
-            <TodoList 
+            <TodoList
               onTaskStart={handleTaskStart}
               activeTaskId={currentTask?.id}
             />
