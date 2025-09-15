@@ -3,13 +3,19 @@ import { Play, Pause, RotateCcw, Zap, Coffee, Target, Trophy } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import CircularProgress from './CircularProgress';
+import { Task } from './TodoList';
 
 type SessionType = 'work' | 'break';
 
 const WORK_TIME = 25 * 60; // 25 minutes in seconds
 const BREAK_TIME = 5 * 60; // 5 minutes in seconds
 
-export default function PomodoroTimer() {
+interface PomodoroTimerProps {
+  currentTask?: Task;
+  onWorkSessionComplete?: (taskId: string) => void;
+}
+
+export default function PomodoroTimer({ currentTask, onWorkSessionComplete }: PomodoroTimerProps) {
   const [timeLeft, setTimeLeft] = useState(WORK_TIME);
   const [isActive, setIsActive] = useState(false);
   const [sessionType, setSessionType] = useState<SessionType>('work');
@@ -29,12 +35,20 @@ export default function PomodoroTimer() {
   const handleSessionComplete = useCallback(() => {
     if (sessionType === 'work') {
       setSessionCount(prev => prev + 1);
+      
+      // Notify parent about work session completion for task tracking
+      if (currentTask && onWorkSessionComplete) {
+        onWorkSessionComplete(currentTask.id);
+      }
+      
       setSessionType('break');
       setSelectedTab('break');
       setTimeLeft(BREAK_TIME);
       toast({
         title: "🎉 Work Session Complete!",
-        description: "Time for a well-deserved break! Great job staying focused.",
+        description: currentTask 
+          ? `Great job on "${currentTask.text}"! Time for a break.`
+          : "Time for a well-deserved break! Great job staying focused.",
       });
     } else {
       setSessionType('work');
@@ -45,7 +59,7 @@ export default function PomodoroTimer() {
         description: "Ready for another focused work session? Let's go!",
       });
     }
-  }, [sessionType, toast]);
+  }, [sessionType, currentTask, onWorkSessionComplete, toast]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -82,8 +96,7 @@ export default function PomodoroTimer() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-sm">
+    <div className="w-full max-w-sm">
         {/* Tabs */}
         <div className="flex gap-2 mb-6 p-1.5 rounded-2xl glass-effect">
           <button
@@ -202,14 +215,15 @@ export default function PomodoroTimer() {
               <Target className="w-4 h-4 text-primary" />
               <div>
                 <div className="text-sm font-medium text-foreground capitalize">
-                  {sessionType} {sessionCount + 1}
+                  {currentTask ? currentTask.text : `${sessionType} ${sessionCount + 1}`}
                 </div>
-                <div className="text-xs text-muted-foreground">Current</div>
+                <div className="text-xs text-muted-foreground">
+                  {currentTask ? 'Current Task' : 'Current'}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 }
