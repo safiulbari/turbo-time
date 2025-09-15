@@ -33,21 +33,25 @@ const Index = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 items-start justify-center min-h-screen p-4">
-      {/* Timer Section */}
-      <div className="flex-shrink-0">
-        <PomodoroTimer 
-          currentTask={currentTask}
-          onWorkSessionComplete={handleWorkSessionComplete}
-        />
-      </div>
-      
-      {/* Todo List Section */}
-      <div className="flex-shrink-0 w-full lg:w-auto">
-        <TodoList 
-          onTaskStart={handleTaskStart}
-          activeTaskId={currentTask?.id}
-        />
+    <div className="min-h-screen p-4 flex items-center justify-center">
+      <div className="w-full max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+          {/* Timer Section */}
+          <div className="flex-shrink-0 w-full lg:w-auto">
+            <PomodoroTimer 
+              currentTask={currentTask}
+              onWorkSessionComplete={handleWorkSessionComplete}
+            />
+          </div>
+          
+          {/* Todo List Section */}
+          <div className="flex-shrink-0 w-full lg:w-80">
+            <TodoList 
+              onTaskStart={handleTaskStart}
+              activeTaskId={currentTask?.id}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

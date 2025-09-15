@@ -78,7 +78,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
   };
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold text-foreground">Tasks</h2>

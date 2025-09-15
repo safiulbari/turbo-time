@@ -96,7 +96,7 @@ export default function PomodoroTimer({ currentTask, onWorkSessionComplete }: Po
   };
 
   return (
-    <div className="w-full max-w-sm">
+    <div className="w-full max-w-md">
         {/* Tabs */}
         <div className="flex gap-2 mb-6 p-1.5 rounded-2xl glass-effect">
           <button
@@ -197,7 +197,8 @@ export default function PomodoroTimer({ currentTask, onWorkSessionComplete }: Po
               className="btn-secondary px-4"
               size="default"
             >
-              <RotateCcw className="w-4 h-4" />
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset
             </Button>
           </div>
 
@@ -213,8 +214,8 @@ export default function PomodoroTimer({ currentTask, onWorkSessionComplete }: Po
             
             <div className="flex items-center gap-2">
               <Target className="w-4 h-4 text-primary" />
-              <div>
-                <div className="text-sm font-medium text-foreground capitalize">
+              <div className="text-left">
+                <div className="text-sm font-medium text-foreground break-words max-w-[120px]">
                   {currentTask ? currentTask.text : `${sessionType} ${sessionCount + 1}`}
                 </div>
                 <div className="text-xs text-muted-foreground">
