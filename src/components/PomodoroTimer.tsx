@@ -224,30 +224,36 @@ export default function PomodoroTimer({
 
         {/* Compact Stats */}
         <div className="flex flex-col gap-3 items-left justify-between text-center px-2">
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4 text-yellow-400" />
-            <div className="flex items-center gap-1">
-              <div className="text-lg font-bold gradient-text">
-                {sessionCount}
+          {sessionCount > 0 ? (
+            <div className="flex items-center gap-2">
+              <Trophy className="w-4 h-4 text-yellow-400" />
+              <div className="flex items-center gap-1">
+                <div className="text-lg font-bold gradient-text">
+                  {sessionCount}
+                </div>
+                <div className="text-xs text-muted-foreground">Sessions</div>
               </div>
-              <div className="text-xs text-muted-foreground">Sessions</div>
             </div>
-          </div>
+          ) : (
+            ""
+          )}
 
-          <div className="flex items-center gap-2">
-            <Target className="w-4 h-4 text-primary" />
-            <div className=" flex  items-center gap-2 text-left">
-              <div className="text-sm font-medium text-foreground break-words max-w-full">
-                {currentTask
-                  ? currentTask.text
-                  : // : `${sessionType} ${sessionCount + 1}`
-                    "no specific task"}
-              </div>
-              {/* <div className="text-xs text-muted-foreground">
+          {currentTask && (
+            <div className="flex items-center gap-2">
+              <Target className="w-4 h-4 text-primary" />
+              <div className=" flex  items-center gap-2 text-left">
+                <div className="text-sm font-medium text-foreground break-words max-w-full">
+                  {currentTask
+                    ? currentTask.text
+                    : // : `${sessionType} ${sessionCount + 1}`
+                      "no specific task"}
+                </div>
+                {/* <div className="text-xs text-muted-foreground">
                 {currentTask ? "Current Task" : "No task"}
               </div> */}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
