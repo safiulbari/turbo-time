@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Plus, X, Play, Minus } from 'lucide-react';
+import { Plus, X, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export interface Task {
   id: string;
   text: string;
   pomodoroCount: number;
   isActive?: boolean;
+  completed?: boolean;
 }
 
 interface TodoListProps {
@@ -45,6 +47,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
         id: Date.now().toString(),
         text: newTaskText.trim(),
         pomodoroCount: 0,
+        completed: false,
       };
       setTasks([...tasks, newTask]);
       setNewTaskText('');
@@ -56,10 +59,10 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     setTasks(tasks.filter(task => task.id !== id));
   };
 
-  const updatePomodoroCount = (id: string, increment: number) => {
+  const toggleTaskCompletion = (id: string) => {
     setTasks(tasks.map(task => 
       task.id === id 
-        ? { ...task, pomodoroCount: Math.max(0, task.pomodoroCount + increment) }
+        ? { ...task, completed: !task.completed }
         : task
     ));
   };
@@ -141,7 +144,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                 <Play className="w-3 h-3 text-primary opacity-70 group-hover:opacity-100 transition-opacity" />
                 <span className={`text-sm font-medium ${
                   activeTaskId === task.id ? 'text-primary' : 'text-foreground'
-                } group-hover:text-primary transition-colors`}>
+                } ${task.completed ? 'line-through opacity-60' : ''} group-hover:text-primary transition-colors`}>
                   {task.text}
                 </span>
               </button>
@@ -155,34 +158,17 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
               </Button>
             </div>
             
-            {/* Pomodoro Counter */}
+            {/* Completion Checkbox */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => updatePomodoroCount(task.id, -1)}
-                  variant="ghost"
-                  size="sm"
-                  className="p-1 h-6 w-6 text-muted-foreground hover:text-foreground"
-                  disabled={task.pomodoroCount === 0}
-                >
-                  <Minus className="w-3 h-3" />
-                </Button>
-                
-                <div className="flex items-center gap-1">
-                  <span className="text-xs text-muted-foreground">🍅</span>
-                  <span className="text-sm font-bold gradient-text min-w-[1.5rem] text-center">
-                    {task.pomodoroCount}
-                  </span>
-                </div>
-                
-                <Button
-                  onClick={() => updatePomodoroCount(task.id, 1)}
-                  variant="ghost"
-                  size="sm"
-                  className="p-1 h-6 w-6 text-muted-foreground hover:text-foreground"
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
+                <Checkbox
+                  checked={task.completed || false}
+                  onCheckedChange={() => toggleTaskCompletion(task.id)}
+                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                />
+                <span className="text-xs text-muted-foreground">
+                  {task.completed ? 'Completed' : 'Mark as done'}
+                </span>
               </div>
               
               {activeTaskId === task.id && (
