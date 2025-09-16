@@ -30,7 +30,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
   const [isAddingTask, setIsAddingTask] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark' | 'night'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const todoListRef = useRef<HTMLDivElement>(null);
 
   // Load tasks from localStorage on mount
@@ -89,10 +89,10 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     }
   };
 
-  const toggleTheme = (newTheme: 'light' | 'dark' | 'night') => {
+  const toggleTheme = (newTheme: 'light' | 'dark') => {
     setTheme(newTheme);
     // Apply theme to document
-    document.documentElement.className = newTheme;
+    document.documentElement.className = newTheme === 'light' ? '' : 'dark';
   };
 
   const generateScreenshot = async () => {
@@ -100,7 +100,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     
     try {
       const canvas = await html2canvas(todoListRef.current, {
-        backgroundColor: theme === 'light' ? '#ffffff' : theme === 'dark' ? '#0a0a0a' : '#000000',
+        backgroundColor: theme === 'light' ? '#ffffff' : '#0a0a0a',
         scale: 2,
         logging: false,
         useCORS: true,
@@ -119,24 +119,25 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
   return (
     <div ref={todoListRef} className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-foreground">Tasks</h2>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Button
             onClick={() => setIsAddingTask(true)}
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="btn-secondary p-2"
+            className="btn-ghost"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 mr-1" />
+            Add Task
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
-                className="btn-secondary p-2"
+                className="btn-icon"
               >
                 <MoreVertical className="w-4 h-4" />
               </Button>
@@ -144,30 +145,23 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
             <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-sm border border-border/50 shadow-xl">
               <DropdownMenuItem 
                 onClick={() => toggleTheme('light')}
-                className="flex items-center gap-2 cursor-pointer hover:bg-accent/80 transition-colors"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors py-2.5"
               >
                 <Sunrise className="w-4 h-4 text-amber-500" />
-                Day Mode
+                Light Mode
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => toggleTheme('dark')}
-                className="flex items-center gap-2 cursor-pointer hover:bg-accent/80 transition-colors"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors py-2.5"
               >
-                <Sun className="w-4 h-4 text-blue-400" />
+                <Moon className="w-4 h-4 text-slate-400" />
                 Dark Mode
               </DropdownMenuItem>
               <DropdownMenuItem 
-                onClick={() => toggleTheme('night')}
-                className="flex items-center gap-2 cursor-pointer hover:bg-accent/80 transition-colors"
-              >
-                <Moon className="w-4 h-4 text-purple-400" />
-                Night Mode
-              </DropdownMenuItem>
-              <DropdownMenuItem 
                 onClick={generateScreenshot}
-                className="flex items-center gap-2 cursor-pointer hover:bg-accent/80 transition-colors border-t border-border/30 mt-1 pt-2"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors border-t border-border/30 mt-1 pt-3"
               >
-                <Camera className="w-4 h-4 text-green-400" />
+                <Camera className="w-4 h-4 text-emerald-500" />
                 Screenshot (JPEG)
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -177,17 +171,17 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
 
       {/* Add Task Input */}
       {isAddingTask && (
-        <div className="mb-6 p-4 timer-card animate-fade-in">
+        <div className="mb-6 p-5 timer-card animate-fade-in">
           <Input
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
             onKeyDown={handleKeyPress}
             placeholder="Enter task name..."
-            className="mb-3 bg-secondary/50 border-white/10 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+            className="mb-4 bg-secondary/30 border-border/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 transition-all duration-200 rounded-lg"
             autoFocus
           />
           <div className="flex gap-3">
-            <Button onClick={addTask} size="sm" className="btn-primary flex-1 hover-scale">
+            <Button onClick={addTask} className="btn-primary flex-1">
               Add Task
             </Button>
             <Button 
@@ -195,9 +189,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                 setIsAddingTask(false);
                 setNewTaskText('');
               }} 
-              variant="outline" 
-              size="sm"
-              className="btn-secondary hover-scale"
+              className="btn-secondary"
             >
               Cancel
             </Button>
@@ -206,30 +198,30 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
       )}
 
       {/* Tasks List */}
-      <div className="space-y-3">
+      <div className="space-y-4">
         {tasks.map((task, index) => (
           <div
             key={task.id}
-            className={`timer-card p-4 transition-all duration-500 hover-scale animate-fade-in group ${
+            className={`timer-card p-5 transition-all duration-300 hover-scale animate-fade-in group ${
               activeTaskId === task.id 
-                ? 'border-primary/60 bg-gradient-to-r from-primary/10 to-primary/5 shadow-lg shadow-primary/20' 
-                : 'hover:border-white/30 hover:shadow-lg hover:shadow-black/10'
+                ? 'border-primary/50 bg-gradient-to-r from-primary/8 to-primary/4 shadow-lg shadow-primary/10' 
+                : 'hover:border-border/60 hover:shadow-md'
             }`}
             style={{ animationDelay: `${index * 50}ms` }}
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center justify-between mb-4">
               <button
                 onClick={() => handleTaskClick(task)}
                 className="flex items-center gap-3 flex-1 text-left group/button"
               >
-                <div className={`p-1.5 rounded-full transition-all duration-300 ${
+                <div className={`p-2 rounded-lg transition-all duration-200 ${
                   activeTaskId === task.id 
-                    ? 'bg-primary/20 text-primary' 
-                    : 'bg-secondary/50 text-muted-foreground group-hover/button:bg-primary/10 group-hover/button:text-primary'
+                    ? 'bg-primary/15 text-primary' 
+                    : 'bg-secondary/40 text-muted-foreground group-hover/button:bg-primary/10 group-hover/button:text-primary'
                 }`}>
-                  <Play className="w-3 h-3" />
+                  <Play className="w-3.5 h-3.5" />
                 </div>
-                <span className={`text-sm font-medium break-words flex-1 transition-all duration-300 ${
+                <span className={`text-sm font-medium break-words flex-1 transition-all duration-200 ${
                   activeTaskId === task.id ? 'text-primary' : 'text-foreground'
                 } ${task.completed ? 'line-through opacity-60' : ''} group-hover/button:text-primary`}>
                   {task.text}
@@ -239,9 +231,9 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                 onClick={() => deleteTask(task.id)}
                 variant="ghost"
                 size="sm"
-                className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-full opacity-0 group-hover:opacity-100"
+                className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-lg opacity-0 group-hover:opacity-100"
               >
-                <X className="w-3 h-3" />
+                <X className="w-3.5 h-3.5" />
               </Button>
             </div>
             
@@ -253,9 +245,9 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                   onCheckedChange={() => toggleTaskCompletion(task.id)}
                   className="data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all duration-200 hover-scale"
                 />
-                <span className={`text-xs transition-colors duration-200 ${
+                <span className={`text-xs font-medium transition-colors duration-200 ${
                   task.completed 
-                    ? 'text-green-500 font-medium' 
+                    ? 'text-emerald-600 dark:text-emerald-400' 
                     : 'text-muted-foreground hover:text-foreground'
                 }`}>
                   {task.completed ? '✨ Completed' : 'Mark as done'}
@@ -263,7 +255,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
               </div>
               
               {activeTaskId === task.id && (
-                <div className="flex items-center gap-2 px-2 py-1 bg-primary/10 rounded-full border border-primary/20 animate-fade-in">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 animate-fade-in">
                   <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
                   <span className="text-xs text-primary font-medium">Active Session</span>
                 </div>
@@ -274,19 +266,17 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
       </div>
 
       {tasks.length === 0 && !isAddingTask && (
-        <div className="text-center py-12 text-muted-foreground animate-fade-in">
-          <div className="mb-4 opacity-50">
-            <div className="w-16 h-16 mx-auto bg-secondary/30 rounded-full flex items-center justify-center mb-3">
-              <Plus className="w-8 h-8" />
+        <div className="text-center py-16 text-muted-foreground animate-fade-in">
+          <div className="mb-6 opacity-60">
+            <div className="w-20 h-20 mx-auto bg-secondary/30 rounded-2xl flex items-center justify-center mb-4">
+              <Plus className="w-10 h-10" />
             </div>
           </div>
-          <p className="text-sm mb-4 font-medium">No tasks yet</p>
-          <p className="text-xs mb-6 opacity-70 max-w-48 mx-auto">Get started by adding your first task to begin tracking your pomodoro sessions</p>
+          <p className="text-base mb-2 font-medium">No tasks yet</p>
+          <p className="text-sm mb-8 opacity-70 max-w-64 mx-auto">Get started by adding your first task to begin tracking your pomodoro sessions</p>
           <Button
             onClick={() => setIsAddingTask(true)}
-            variant="outline"
-            size="sm"
-            className="btn-secondary hover-scale"
+            className="btn-primary"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add your first task

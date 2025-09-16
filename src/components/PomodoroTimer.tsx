@@ -111,7 +111,7 @@ export default function PomodoroTimer({
   return (
     <div className="w-full max-w-md">
       {/* Tabs */}
-      <div className="flex gap-2 mb-6 p-1.5 rounded-2xl glass-effect">
+      <div className="flex gap-3 mb-8 p-2 rounded-xl bg-secondary/30 backdrop-blur-sm border border-border/30">
         <button
           onClick={() => handleTabChange("work")}
           disabled={isActive}
@@ -138,51 +138,51 @@ export default function PomodoroTimer({
       </div>
 
       {/* Main Timer Card */}
-      <div className="timer-card p-6 text-center">
+      <div className="timer-card p-8 text-center">
         {/* Session Status */}
-        <div className="mb-4">
+        <div className="mb-6">
           <div
             className={`
-              inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm
-              backdrop-blur-sm border transition-all duration-500
+              inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium
+              backdrop-blur-sm border transition-all duration-300
               ${
                 sessionType === "work"
-                  ? "bg-purple-500/20 border-purple-400/30 text-purple-300"
-                  : "bg-green-500/20 border-green-400/30 text-green-300"
+                  ? "bg-primary/15 border-primary/30 text-primary"
+                  : "bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
               }
             `}
           >
             {sessionType === "work" ? (
               <>
                 <Target className="w-4 h-4" />
-                <span className="font-medium">Focus Session</span>
+                <span>Focus Session</span>
               </>
             ) : (
               <>
                 <Coffee className="w-4 h-4" />
-                <span className="font-medium">Break Time</span>
+                <span>Break Time</span>
               </>
             )}
           </div>
         </div>
 
         {/* Timer Display */}
-        <div className="relative mb-6 flex justify-center">
+        <div className="relative mb-8 flex justify-center">
           <CircularProgress
             progress={progress}
             sessionType={sessionType}
-            size={220}
+            size={240}
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div
-                className={`text-3xl sm:text-4xl font-bold mb-1 transition-all duration-300 ${
+                className={`text-4xl sm:text-5xl font-bold mb-2 transition-all duration-200 ${
                   isActive ? "animate-bounce-gentle" : ""
                 }`}
               >
                 {formatTime(timeLeft)}
               </div>
-              <div className="text-xs text-muted-foreground uppercase tracking-wide">
+              <div className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
                 {isActive ? "In Progress" : "Ready"}
               </div>
             </div>
@@ -190,13 +190,12 @@ export default function PomodoroTimer({
         </div>
 
         {/* Controls */}
-        <div className="flex gap-3 justify-center mb-4">
+        <div className="flex gap-4 justify-center mb-6">
           <Button
             onClick={handleStartPause}
-            className={`btn-primary flex-1 max-w-32 ${
+            className={`btn-primary px-8 py-3 ${
               isActive ? "animate-pulse-glow" : ""
             }`}
-            size="default"
           >
             {isActive ? (
               <>
@@ -213,9 +212,7 @@ export default function PomodoroTimer({
 
           <Button
             onClick={handleReset}
-            variant="outline"
-            className="btn-secondary px-4"
-            size="default"
+            className="btn-secondary px-6 py-3"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
@@ -223,34 +220,27 @@ export default function PomodoroTimer({
         </div>
 
         {/* Compact Stats */}
-        <div className="flex flex-col gap-3 items-left justify-between text-center px-2">
-          {sessionCount > 0 ? (
-            <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-yellow-400" />
-              <div className="flex items-center gap-1">
-                <div className="text-lg font-bold gradient-text">
+        <div className="flex flex-col gap-4 text-left px-2">
+          {sessionCount > 0 && (
+            <div className="flex items-center gap-3">
+              <Trophy className="w-5 h-5 text-amber-500" />
+              <div className="flex items-baseline gap-2">
+                <div className="text-xl font-bold gradient-text">
                   {sessionCount}
                 </div>
-                <div className="text-xs text-muted-foreground">Sessions</div>
+                <div className="text-sm text-muted-foreground font-medium">Sessions Completed</div>
               </div>
             </div>
-          ) : (
-            ""
           )}
 
           {currentTask && (
-            <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-primary" />
-              <div className=" flex  items-center gap-2 text-left">
-                <div className="text-sm font-medium text-foreground break-words max-w-full">
-                  {currentTask
-                    ? currentTask.text
-                    : // : `${sessionType} ${sessionCount + 1}`
-                      "no specific task"}
+            <div className="flex items-start gap-3">
+              <Target className="w-5 h-5 text-primary mt-0.5" />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-foreground break-words">
+                  {currentTask.text}
                 </div>
-                {/* <div className="text-xs text-muted-foreground">
-                {currentTask ? "Current Task" : "No task"}
-              </div> */}
+                <div className="text-xs text-muted-foreground mt-1">Current Task</div>
               </div>
             </div>
           )}
