@@ -21,11 +21,13 @@ const BREAK_TIME = 5 * 60; // 5 minutes in seconds
 interface PomodoroTimerProps {
   currentTask?: Task;
   onWorkSessionComplete?: (taskId: string) => void;
+  autoStart?: boolean;
 }
 
 export default function PomodoroTimer({
   currentTask,
   onWorkSessionComplete,
+  autoStart = false,
 }: PomodoroTimerProps) {
   const [timeLeft, setTimeLeft] = useState(WORK_TIME);
   const [isActive, setIsActive] = useState(false);
@@ -107,6 +109,16 @@ export default function PomodoroTimer({
     setSessionType(tab);
     setTimeLeft(tab === "work" ? WORK_TIME : BREAK_TIME);
   };
+
+  // Auto-start timer when a task is selected
+  useEffect(() => {
+    if (autoStart && currentTask) {
+      setIsActive(true);
+      setSessionType("work");
+      setSelectedTab("work");
+      setTimeLeft(WORK_TIME);
+    }
+  }, [currentTask, autoStart]);
 
   return (
     <div className="w-full max-w-md">

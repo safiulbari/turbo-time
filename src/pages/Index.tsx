@@ -4,9 +4,13 @@ import TodoList, { Task } from "@/components/TodoList";
 
 const Index = () => {
   const [currentTask, setCurrentTask] = useState<Task | undefined>();
+  const [shouldAutoStart, setShouldAutoStart] = useState(false);
 
   const handleTaskStart = (task: Task) => {
     setCurrentTask(task);
+    setShouldAutoStart(true);
+    // Reset auto-start flag after a brief delay
+    setTimeout(() => setShouldAutoStart(false), 100);
   };
 
   const handleWorkSessionComplete = (taskId: string) => {
@@ -44,6 +48,7 @@ const Index = () => {
             <PomodoroTimer
               currentTask={currentTask}
               onWorkSessionComplete={handleWorkSessionComplete}
+              autoStart={shouldAutoStart}
             />
           </div>
 
