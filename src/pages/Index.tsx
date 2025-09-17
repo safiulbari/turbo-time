@@ -37,28 +37,23 @@ const Index = () => {
       }
     }
   };
-  return <div className="min-h-screen bg-background">      
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-4">
-        {/* Mobile Layout - Stacked */}
-        <div className="flex flex-col gap-4 md:hidden">
-          <TodoList onTaskStart={handleTaskStart} activeTaskId={currentTask?.id} />
-          <PomodoroTimer currentTask={currentTask} onWorkSessionComplete={handleWorkSessionComplete} onSessionEnd={handleSessionEnd} autoStart={shouldAutoStart} />
-        </div>
+  return <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/40">
+        
+      </header>
 
-        {/* Desktop Layout - Centered */}
-        <div className="hidden md:flex justify-center items-start min-h-[calc(100vh-2rem)]">
-          <div className="grid grid-cols-2 gap-8 max-w-4xl w-full">
-            <div className="flex justify-end">
-              <div className="w-full max-w-md">
-                <TodoList onTaskStart={handleTaskStart} activeTaskId={currentTask?.id} />
-              </div>
-            </div>
-            <div className="flex justify-start">
-              <div className="w-full max-w-xs">
-                <PomodoroTimer currentTask={currentTask} onWorkSessionComplete={handleWorkSessionComplete} onSessionEnd={handleSessionEnd} autoStart={shouldAutoStart} />
-              </div>
-            </div>
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          {/* Timer Section */}
+          <div className="lg:order-1 order-2">
+            <PomodoroTimer currentTask={currentTask} onWorkSessionComplete={handleWorkSessionComplete} onSessionEnd={handleSessionEnd} autoStart={shouldAutoStart} />
+          </div>
+
+          {/* Todo List Section */}
+          <div className="lg:order-2 order-1">
+            <TodoList onTaskStart={handleTaskStart} activeTaskId={currentTask?.id} />
           </div>
         </div>
       </main>
