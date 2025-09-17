@@ -21,12 +21,14 @@ const BREAK_TIME = 5 * 60; // 5 minutes in seconds
 interface PomodoroTimerProps {
   currentTask?: Task;
   onWorkSessionComplete?: (taskId: string) => void;
+  onSessionEnd?: () => void;
   autoStart?: boolean;
 }
 
 export default function PomodoroTimer({
   currentTask,
   onWorkSessionComplete,
+  onSessionEnd,
   autoStart = false,
 }: PomodoroTimerProps) {
   const [timeLeft, setTimeLeft] = useState(WORK_TIME);
@@ -39,6 +41,45 @@ export default function PomodoroTimer({
   const currentSessionTime = sessionType === "work" ? WORK_TIME : BREAK_TIME;
   const progress = ((currentSessionTime - timeLeft) / currentSessionTime) * 100;
 
+  // Sound functions
+  const playStartSound = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.2);
+  };
+
+  const playCompleteSound = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const frequencies = [523, 659, 784, 1047]; // C, E, G, C
+    
+    frequencies.forEach((freq, index) => {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime + index * 0.15);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.3);
+      
+      oscillator.start(audioContext.currentTime + index * 0.15);
+      oscillator.stop(audioContext.currentTime + index * 0.15 + 0.3);
+    });
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -48,6 +89,8 @@ export default function PomodoroTimer({
   };
 
   const handleSessionComplete = useCallback(() => {
+    playCompleteSound();
+    
     if (sessionType === "work") {
       setSessionCount((prev) => prev + 1);
 
@@ -65,6 +108,11 @@ export default function PomodoroTimer({
           ? `Great job on "${currentTask.text}"! Time for a break.`
           : "Time for a well-deserved break! Great job staying focused.",
       });
+      
+      // Clear current task after work session
+      if (onSessionEnd) {
+        onSessionEnd();
+      }
     } else {
       setSessionType("work");
       setSelectedTab("work");
@@ -74,7 +122,7 @@ export default function PomodoroTimer({
         description: "Ready for another focused work session? Let's go!",
       });
     }
-  }, [sessionType, currentTask, onWorkSessionComplete, toast]);
+  }, [sessionType, currentTask, onWorkSessionComplete, onSessionEnd, toast]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -92,6 +140,9 @@ export default function PomodoroTimer({
   }, [isActive, timeLeft, handleSessionComplete]);
 
   const handleStartPause = () => {
+    if (!isActive) {
+      playStartSound();
+    }
     setIsActive(!isActive);
   };
 

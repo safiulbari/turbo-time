@@ -13,6 +13,10 @@ const Index = () => {
     setTimeout(() => setShouldAutoStart(false), 100);
   };
 
+  const handleSessionEnd = () => {
+    setCurrentTask(undefined);
+  };
+
   const handleWorkSessionComplete = (taskId: string) => {
     // Update the task's pomodoro count in localStorage
     const savedTasks = localStorage.getItem("pomodoro-tasks");
@@ -40,7 +44,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen p-4 flex items-center justify-center">
+    <div className={`min-h-screen p-4 flex items-center justify-center transition-all duration-500 ${
+      !currentTask ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' : ''
+    }`}>
       <div className="w-full max-w-8xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
           {/* Timer Section */}
@@ -48,6 +54,7 @@ const Index = () => {
             <PomodoroTimer
               currentTask={currentTask}
               onWorkSessionComplete={handleWorkSessionComplete}
+              onSessionEnd={handleSessionEnd}
               autoStart={shouldAutoStart}
             />
           </div>

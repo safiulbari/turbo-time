@@ -96,20 +96,104 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
   };
 
   const generateScreenshot = async () => {
-    if (!todoListRef.current) return;
-    
     try {
-      const canvas = await html2canvas(todoListRef.current, {
-        backgroundColor: theme === 'light' ? '#ffffff' : '#0a0a0a',
+      // Create a beautiful standalone card
+      const screenshotContainer = document.createElement('div');
+      screenshotContainer.style.cssText = `
+        width: 600px;
+        padding: 80px 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: fixed;
+        top: -9999px;
+        left: -9999px;
+      `;
+
+      const taskCard = document.createElement('div');
+      taskCard.style.cssText = `
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      `;
+
+      const title = document.createElement('h2');
+      title.textContent = 'My Tasks';
+      title.style.cssText = `
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a202c;
+        margin: 0 0 32px 0;
+        text-align: center;
+      `;
+
+      const taskList = document.createElement('div');
+      taskList.style.cssText = 'display: flex; flex-direction: column; gap: 16px;';
+
+      if (tasks.length === 0) {
+        const emptyState = document.createElement('p');
+        emptyState.textContent = '📝 No tasks yet - ready to get productive!';
+        emptyState.style.cssText = `
+          text-align: center;
+          color: #718096;
+          font-size: 18px;
+          padding: 40px 0;
+        `;
+        taskList.appendChild(emptyState);
+      } else {
+        tasks.forEach(task => {
+          const taskItem = document.createElement('div');
+          taskItem.style.cssText = `
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+          `;
+
+          const checkbox = document.createElement('div');
+          checkbox.textContent = task.completed ? '✅' : '☐';
+          checkbox.style.cssText = 'font-size: 24px;';
+
+          const taskText = document.createElement('span');
+          taskText.textContent = task.text;
+          taskText.style.cssText = `
+            font-size: 18px;
+            color: ${task.completed ? '#718096' : '#2d3748'};
+            text-decoration: ${task.completed ? 'line-through' : 'none'};
+            flex: 1;
+          `;
+
+          taskItem.appendChild(checkbox);
+          taskItem.appendChild(taskText);
+          taskList.appendChild(taskItem);
+        });
+      }
+
+      taskCard.appendChild(title);
+      taskCard.appendChild(taskList);
+      screenshotContainer.appendChild(taskCard);
+      document.body.appendChild(screenshotContainer);
+
+      // Generate screenshot
+      const canvas = await html2canvas(screenshotContainer, {
+        backgroundColor: null,
         scale: 2,
         logging: false,
         useCORS: true,
       });
-      
-      // Convert to JPEG and download
+
+      // Clean up
+      document.body.removeChild(screenshotContainer);
+
+      // Download
       const link = document.createElement('a');
-      link.download = `task-list-${new Date().toISOString().split('T')[0]}.jpg`;
-      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.download = `beautiful-tasks-${new Date().toISOString().split('T')[0]}.jpg`;
+      link.href = canvas.toDataURL('image/jpeg', 0.95);
       link.click();
     } catch (error) {
       console.error('Error generating screenshot:', error);
