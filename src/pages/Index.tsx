@@ -44,13 +44,19 @@ const Index = () => {
   };
 
   return (
-    <div className={`min-h-screen p-4 flex items-center justify-center transition-all duration-500 ${
-      !currentTask ? 'bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900' : ''
-    }`}>
-      <div className="w-full max-w-8xl mx-auto">
-        <div className="flex flex-col lg:flex-row gap-8 items-start justify-center">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm border-b border-border/40">
+        <div className="container mx-auto px-4 py-4">
+          <h1 className="text-2xl font-bold text-foreground">Focus Timer</h1>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6">
+        <div className="grid lg:grid-cols-2 gap-6 max-w-6xl mx-auto">
           {/* Timer Section */}
-          <div className="flex-shrink-0 w-full lg:w-[400px]">
+          <div className="lg:order-1 order-2">
             <PomodoroTimer
               currentTask={currentTask}
               onWorkSessionComplete={handleWorkSessionComplete}
@@ -60,14 +66,14 @@ const Index = () => {
           </div>
 
           {/* Todo List Section */}
-          <div className="flex-shrink-0 w-full lg:w-80">
+          <div className="lg:order-2 order-1">
             <TodoList
               onTaskStart={handleTaskStart}
               activeTaskId={currentTask?.id}
             />
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

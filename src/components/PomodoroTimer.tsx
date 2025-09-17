@@ -172,80 +172,61 @@ export default function PomodoroTimer({
   }, [currentTask, autoStart]);
 
   return (
-    <div className="w-full max-w-md">
-      {/* Tabs */}
-      <div className="flex gap-3 mb-8 p-2 rounded-xl bg-secondary/30 backdrop-blur-sm border border-border/30">
-        <button
-          onClick={() => handleTabChange("work")}
-          disabled={isActive}
-          className={`tab-button flex-1 flex items-center justify-center gap-2 py-3 text-sm ${
-            selectedTab === "work" ? "tab-active" : "tab-inactive"
-          } ${isActive ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          <Zap className="w-4 h-4" />
-          <span>Focus</span>
-          <span className="text-xs opacity-70">25m</span>
-        </button>
-
-        <button
-          onClick={() => handleTabChange("break")}
-          disabled={isActive}
-          className={`tab-button flex-1 flex items-center justify-center gap-2 py-3 text-sm ${
-            selectedTab === "break" ? "tab-active" : "tab-inactive"
-          } ${isActive ? "opacity-50 cursor-not-allowed" : ""}`}
-        >
-          <Coffee className="w-4 h-4" />
-          <span>Break</span>
-          <span className="text-xs opacity-70">5m</span>
-        </button>
+    <div className="w-full">
+      {/* Card Header */}
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold text-foreground mb-2">
+          {currentTask ? "Focus Session" : "Pomodoro Timer"}
+        </h2>
+        {currentTask && (
+          <p className="text-sm text-muted-foreground">
+            Working on: <span className="font-medium text-foreground">{currentTask.text}</span>
+          </p>
+        )}
       </div>
 
-      {/* Main Timer Card */}
-      <div className="timer-card p-8 text-center">
-        {/* Session Status */}
-        <div className="mb-6">
-          <div
-            className={`
-              inline-flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-medium
-              backdrop-blur-sm border transition-all duration-300
-              ${
-                sessionType === "work"
-                  ? "bg-primary/15 border-primary/30 text-primary"
-                  : "bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400"
-              }
-            `}
+      {/* Timer Card */}
+      <div className="timer-card p-6">
+        {/* Session Tabs */}
+        <div className="flex gap-2 mb-6 p-1 rounded-lg bg-secondary/30">
+          <button
+            onClick={() => handleTabChange("work")}
+            disabled={isActive}
+            className={`tab-button flex-1 flex items-center justify-center gap-2 py-2.5 text-sm rounded-md transition-all ${
+              selectedTab === "work" ? "tab-active" : "tab-inactive"
+            } ${isActive ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {sessionType === "work" ? (
-              <>
-                <Target className="w-4 h-4" />
-                <span>Focus Session</span>
-              </>
-            ) : (
-              <>
-                <Coffee className="w-4 h-4" />
-                <span>Break Time</span>
-              </>
-            )}
-          </div>
+            <Zap className="w-4 h-4" />
+            <span>Focus</span>
+            <span className="text-xs opacity-70">25m</span>
+          </button>
+
+          <button
+            onClick={() => handleTabChange("break")}
+            disabled={isActive}
+            className={`tab-button flex-1 flex items-center justify-center gap-2 py-2.5 text-sm rounded-md transition-all ${
+              selectedTab === "break" ? "tab-active" : "tab-inactive"
+            } ${isActive ? "opacity-50 cursor-not-allowed" : ""}`}
+          >
+            <Coffee className="w-4 h-4" />
+            <span>Break</span>
+            <span className="text-xs opacity-70">5m</span>
+          </button>
         </div>
 
         {/* Timer Display */}
-        <div className="relative mb-8 flex justify-center">
+        <div className="relative mb-6 flex justify-center">
           <CircularProgress
             progress={progress}
             sessionType={sessionType}
-            size={240}
+            size={200}
           />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div
-                className={`text-4xl sm:text-5xl font-bold mb-2 transition-all duration-200 ${
-                  isActive ? "animate-bounce-gentle" : ""
-                }`}
-              >
+              <div className="text-3xl font-bold mb-1">
                 {formatTime(timeLeft)}
               </div>
-              <div className="text-sm text-muted-foreground uppercase tracking-wider font-medium">
+              <div className="text-xs text-muted-foreground uppercase tracking-wider">
                 {isActive ? "In Progress" : "Ready"}
               </div>
             </div>
@@ -253,12 +234,11 @@ export default function PomodoroTimer({
         </div>
 
         {/* Controls */}
-        <div className="flex gap-4 justify-center mb-6">
+        <div className="flex gap-3 justify-center mb-4">
           <Button
             onClick={handleStartPause}
-            className={`btn-primary px-8 py-3 ${
-              isActive ? "animate-pulse-glow" : ""
-            }`}
+            className="btn-primary px-6 py-2"
+            size="sm"
           >
             {isActive ? (
               <>
@@ -275,39 +255,23 @@ export default function PomodoroTimer({
 
           <Button
             onClick={handleReset}
-            className="btn-secondary px-6 py-3"
+            className="btn-secondary px-4 py-2"
+            size="sm"
           >
             <RotateCcw className="w-4 h-4 mr-2" />
             Reset
           </Button>
         </div>
 
-        {/* Compact Stats */}
-        <div className="flex flex-col gap-4 text-left px-2">
-          {sessionCount > 0 && (
-            <div className="flex items-center gap-3">
-              <Trophy className="w-5 h-5 text-amber-500" />
-              <div className="flex items-baseline gap-2">
-                <div className="text-xl font-bold gradient-text">
-                  {sessionCount}
-                </div>
-                <div className="text-sm text-muted-foreground font-medium">Sessions Completed</div>
-              </div>
-            </div>
-          )}
-
-          {currentTask && (
-            <div className="flex items-start gap-3">
-              <Target className="w-5 h-5 text-primary mt-0.5" />
-              <div className="flex-1">
-                <div className="text-sm font-medium text-foreground break-words">
-                  {currentTask.text}
-                </div>
-                <div className="text-xs text-muted-foreground mt-1">Current Task</div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* Stats */}
+        {sessionCount > 0 && (
+          <div className="flex items-center justify-center gap-2 pt-4 border-t border-border/30">
+            <Trophy className="w-4 h-4 text-amber-500" />
+            <span className="text-sm text-muted-foreground">
+              <span className="font-semibold text-foreground">{sessionCount}</span> sessions completed
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
