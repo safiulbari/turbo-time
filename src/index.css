@@ -147,8 +147,7 @@ All colors MUST be HSL.
   }
   
   .btn-primary {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg px-4 py-2.5 transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98];
-    box-shadow: var(--shadow-primary);
+    @apply bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-lg px-4 py-2.5 transition-all duration-200 border border-transparent hover:border-primary/30;
   }
   
   .btn-secondary {

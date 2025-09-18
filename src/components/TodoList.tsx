@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Plus, X, Play, MoreVertical, Moon, Sun, Camera, Sunrise } from 'lucide-react';
+import { Plus, X, Play, MoreVertical, Moon, Sun, Camera, Sunrise, Edit2, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -30,6 +30,8 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskText, setNewTaskText] = useState('');
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState('');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const todoListRef = useRef<HTMLDivElement>(null);
 
@@ -76,6 +78,32 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     ));
   };
 
+  const clearAllTasks = () => {
+    setTasks([]);
+  };
+
+  const startEditTask = (task: Task) => {
+    setEditingTaskId(task.id);
+    setEditingText(task.text);
+  };
+
+  const saveEditTask = () => {
+    if (editingText.trim()) {
+      setTasks(tasks.map(task => 
+        task.id === editingTaskId 
+          ? { ...task, text: editingText.trim() }
+          : task
+      ));
+    }
+    setEditingTaskId(null);
+    setEditingText('');
+  };
+
+  const cancelEditTask = () => {
+    setEditingTaskId(null);
+    setEditingText('');
+  };
+
   const handleTaskClick = (task: Task) => {
     onTaskStart(task);
   };
@@ -86,6 +114,14 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     } else if (e.key === 'Escape') {
       setIsAddingTask(false);
       setNewTaskText('');
+    }
+  };
+
+  const handleEditKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveEditTask();
+    } else if (e.key === 'Escape') {
+      cancelEditTask();
     }
   };
 
@@ -282,11 +318,20 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={generateScreenshot}
-                className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors border-t border-border/30 mt-1 pt-3 px-3"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors py-3 px-3"
               >
                 <Camera className="w-4 h-4 text-emerald-500" />
                 Screenshot
               </DropdownMenuItem>
+              {tasks.length > 0 && (
+                <DropdownMenuItem 
+                  onClick={clearAllTasks}
+                  className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors border-t border-border/30 mt-1 pt-3 px-3 text-destructive"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Clear All Tasks
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -294,7 +339,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
 
       {/* Add Task Input */}
       {isAddingTask && (
-        <div className="mb-6 p-5 timer-card animate-fade-in">
+        <div className="mb-6 p-6 timer-card animate-fade-in">
           <Input
             value={newTaskText}
             onChange={(e) => setNewTaskText(e.target.value)}
@@ -303,7 +348,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
             className="mb-4 bg-secondary/30 border-border/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 transition-all duration-200 rounded-lg"
             autoFocus
           />
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <Button onClick={addTask} className="btn-primary flex-1">
               Add Task
             </Button>
@@ -326,65 +371,103 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
         {tasks.map((task, index) => (
           <div
             key={task.id}
-            className={`timer-card p-5 transition-all duration-300 hover-scale animate-fade-in group ${
+            className={`timer-card p-6 transition-all duration-300 hover-scale animate-fade-in group ${
               activeTaskId === task.id 
                 ? 'border-primary/50 bg-gradient-to-r from-primary/8 to-primary/4 shadow-lg shadow-primary/10' 
                 : 'hover:border-border/60 hover:shadow-md'
             }`}
             style={{ animationDelay: `${index * 50}ms` }}
           >
-            <div className="flex items-center justify-between mb-4">
-              <button
-                onClick={() => handleTaskClick(task)}
-                className="flex items-center gap-3 flex-1 text-left group/button"
-              >
-                <div className={`p-2 rounded-lg transition-all duration-200 ${
-                  activeTaskId === task.id 
-                    ? 'bg-primary/15 text-primary' 
-                    : 'bg-secondary/40 text-muted-foreground group-hover/button:bg-primary/10 group-hover/button:text-primary'
-                }`}>
-                  <Play className="w-3.5 h-3.5" />
-                </div>
-                <span className={`text-sm font-medium break-words flex-1 transition-all duration-200 ${
-                  activeTaskId === task.id ? 'text-primary' : 'text-foreground'
-                } ${task.completed ? 'line-through opacity-60' : ''} group-hover/button:text-primary`}>
-                  {task.text}
-                </span>
-              </button>
-              <Button
-                onClick={() => deleteTask(task.id)}
-                variant="ghost"
-                size="sm"
-                className="w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-lg opacity-0 group-hover:opacity-100"
-              >
-                <X className="w-3.5 h-3.5" />
-              </Button>
-            </div>
-            
-            {/* Completion Checkbox and Status */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Checkbox
-                  checked={task.completed || false}
-                  onCheckedChange={() => toggleTaskCompletion(task.id)}
-                  className="data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all duration-200 hover-scale"
+            {editingTaskId === task.id ? (
+              /* Edit Mode */
+              <div className="space-y-4">
+                <Input
+                  value={editingText}
+                  onChange={(e) => setEditingText(e.target.value)}
+                  onKeyDown={handleEditKeyPress}
+                  className="bg-secondary/30 border-border/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 transition-all duration-200 rounded-lg"
+                  autoFocus
                 />
-                <span className={`text-xs font-medium transition-colors duration-200 ${
-                  task.completed 
-                    ? 'text-emerald-600 dark:text-emerald-400' 
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}>
-                  {task.completed ? '✨ Completed' : 'Mark as done'}
-                </span>
-              </div>
-              
-              {activeTaskId === task.id && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 animate-fade-in">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  <span className="text-xs text-primary font-medium">Active Session</span>
+                <div className="flex gap-3">
+                  <Button onClick={saveEditTask} className="btn-primary flex-1">
+                    Save
+                  </Button>
+                  <Button 
+                    onClick={cancelEditTask}
+                    variant="outline"
+                    className="border-border/50 hover:border-border hover:bg-accent/50"
+                  >
+                    Cancel
+                  </Button>
                 </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              /* View Mode */
+              <>
+                <div className="flex items-center justify-between mb-4">
+                  <button
+                    onClick={() => handleTaskClick(task)}
+                    className="flex items-center gap-3 flex-1 text-left group/button"
+                  >
+                    <div className={`p-2 rounded-lg transition-all duration-200 ${
+                      activeTaskId === task.id 
+                        ? 'bg-primary/15 text-primary' 
+                        : 'bg-secondary/40 text-muted-foreground group-hover/button:bg-primary/10 group-hover/button:text-primary'
+                    }`}>
+                      <Play className="w-3.5 h-3.5" />
+                    </div>
+                    <span className={`text-sm font-medium break-words flex-1 transition-all duration-200 ${
+                      activeTaskId === task.id ? 'text-primary' : 'text-foreground'
+                    } ${task.completed ? 'line-through opacity-60' : ''} group-hover/button:text-primary`}>
+                      {task.text}
+                    </span>
+                  </button>
+                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <Button
+                      onClick={() => startEditTask(task)}
+                      variant="ghost"
+                      size="sm"
+                      className="w-8 h-8 p-0 text-muted-foreground hover:text-foreground hover:bg-accent/50 transition-all duration-200 rounded-lg"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </Button>
+                    <Button
+                      onClick={() => deleteTask(task.id)}
+                      variant="ghost"
+                      size="sm"
+                      className="w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-lg"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                </div>
+                
+                {/* Completion Checkbox and Status */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Checkbox
+                      checked={task.completed || false}
+                      onCheckedChange={() => toggleTaskCompletion(task.id)}
+                      className="data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all duration-200 hover-scale"
+                    />
+                    <span className={`text-xs font-medium transition-colors duration-200 ${
+                      task.completed 
+                        ? 'text-emerald-600 dark:text-emerald-400' 
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}>
+                      {task.completed ? '✨ Completed' : 'Mark as done'}
+                    </span>
+                  </div>
+                  
+                  {activeTaskId === task.id && (
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20 animate-fade-in">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                      <span className="text-xs text-primary font-medium">Active Session</span>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         ))}
       </div>

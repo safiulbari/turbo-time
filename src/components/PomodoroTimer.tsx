@@ -253,12 +253,10 @@ export default function PomodoroTimer({
         </div>
 
         {/* Controls */}
-        <div className="flex gap-3 justify-center mb-6">
+        <div className="flex gap-4 justify-center mb-8">
           <Button
             onClick={handleStartPause}
-            className={`btn-primary px-8 py-3 ${
-              isActive ? "animate-pulse-glow" : ""
-            }`}
+            className="btn-primary px-8 py-3"
           >
             {isActive ? (
               <>
@@ -284,7 +282,7 @@ export default function PomodoroTimer({
         </div>
 
         {/* Compact Stats */}
-        <div className="flex flex-col gap-4 text-left px-2">
+        <div className="flex flex-col gap-4 text-left px-4">
           {sessionCount > 0 && (
             <div className="flex items-center gap-3">
               <Trophy className="w-5 h-5 text-amber-500" />
