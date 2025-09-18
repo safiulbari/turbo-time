@@ -76,8 +76,8 @@ All colors MUST be HSL.
     --popover: 224 22% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 283 89% 74%;
-    --primary-foreground: 222 22% 8%;
+    --primary: 262 83% 68%;
+    --primary-foreground: 210 40% 98%;
 
     --secondary: 222 22% 16%;
     --secondary-foreground: 210 40% 98%;
@@ -153,6 +153,10 @@ All colors MUST be HSL.
   
   .btn-secondary {
     @apply bg-secondary/60 hover:bg-secondary/80 text-secondary-foreground font-medium rounded-lg px-3 py-2.5 transition-all duration-200 backdrop-blur-sm border border-border/30 hover:border-border/50;
+  }
+
+  .dark .btn-secondary {
+    @apply bg-secondary/40 hover:bg-secondary/60 text-secondary-foreground border-border/40 hover:border-border/60;
   }
 
   .btn-ghost {

@@ -13,6 +13,48 @@ import { useToast } from "@/hooks/use-toast";
 import CircularProgress from "./CircularProgress";
 import { Task } from "./TodoList";
 
+// Sound utilities
+const playSound = (frequency: number, duration: number, type: 'sine' | 'triangle' | 'sawtooth' = 'sine') => {
+  try {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = frequency;
+    oscillator.type = type;
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + duration);
+  } catch (error) {
+    console.log('Audio not supported');
+  }
+};
+
+const playStartSound = () => {
+  // Uplifting start sound - ascending notes
+  playSound(440, 0.15); // A4
+  setTimeout(() => playSound(554, 0.15), 100); // C#5
+  setTimeout(() => playSound(659, 0.2), 200); // E5
+};
+
+const playResetSound = () => {
+  // Neutral reset sound - single note
+  playSound(523, 0.3, 'triangle'); // C5
+};
+
+const playBreakSound = () => {
+  // Soothing break sound - gentle descending notes
+  playSound(523, 0.4, 'sine'); // C5
+  setTimeout(() => playSound(466, 0.4, 'sine'), 200); // Bb4
+  setTimeout(() => playSound(415, 0.6, 'sine'), 400); // Ab4
+};
+
 type SessionType = "work" | "break";
 
 const WORK_TIME = 25 * 60; // 25 minutes in seconds
@@ -50,6 +92,9 @@ export default function PomodoroTimer({
   const handleSessionComplete = useCallback(() => {
     if (sessionType === "work") {
       setSessionCount((prev) => prev + 1);
+      
+      // Play soothing break sound
+      playBreakSound();
 
       // Notify parent about work session completion for task tracking
       if (currentTask && onWorkSessionComplete) {
@@ -92,10 +137,16 @@ export default function PomodoroTimer({
   }, [isActive, timeLeft, handleSessionComplete]);
 
   const handleStartPause = () => {
+    if (!isActive) {
+      // Play start sound when starting
+      playStartSound();
+    }
     setIsActive(!isActive);
   };
 
   const handleReset = () => {
+    // Play reset sound
+    playResetSound();
     setIsActive(false);
     setSessionType("work");
     setSelectedTab("work");
@@ -224,10 +275,11 @@ export default function PomodoroTimer({
 
           <Button
             onClick={handleReset}
-            className="btn-secondary px-6 py-3"
+            variant="outline"
+            size="icon"
+            className="w-12 h-12 rounded-xl"
           >
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Reset
+            <RotateCcw className="w-4 h-4" />
           </Button>
         </div>
 

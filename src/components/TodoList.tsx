@@ -99,17 +99,140 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
     if (!todoListRef.current) return;
     
     try {
-      const canvas = await html2canvas(todoListRef.current, {
-        backgroundColor: theme === 'light' ? '#ffffff' : '#0a0a0a',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-      });
+      // Create a beautiful canvas with gradient background
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Set canvas dimensions
+      canvas.width = 800;
+      canvas.height = 600;
+
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      if (theme === 'light') {
+        gradient.addColorStop(0, '#667eea');
+        gradient.addColorStop(1, '#764ba2');
+      } else {
+        gradient.addColorStop(0, '#833ab4');
+        gradient.addColorStop(1, '#fd1d1d');
+      }
       
-      // Convert to JPEG and download
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add subtle pattern overlay
+      ctx.fillStyle = theme === 'light' 
+        ? 'rgba(255, 255, 255, 0.1)' 
+        : 'rgba(0, 0, 0, 0.2)';
+      for (let i = 0; i < canvas.width; i += 60) {
+        for (let j = 0; j < canvas.height; j += 60) {
+          ctx.fillRect(i, j, 30, 30);
+        }
+      }
+
+      // Create content area
+      const contentX = 100;
+      const contentY = 80;
+      const contentWidth = canvas.width - 200;
+      const contentHeight = canvas.height - 160;
+
+      // Draw content background
+      ctx.fillStyle = theme === 'light' 
+        ? 'rgba(255, 255, 255, 0.95)' 
+        : 'rgba(20, 20, 30, 0.95)';
+      ctx.roundRect(contentX, contentY, contentWidth, contentHeight, 20);
+      ctx.fill();
+
+      // Draw border
+      ctx.strokeStyle = theme === 'light' 
+        ? 'rgba(255, 255, 255, 0.3)' 
+        : 'rgba(255, 255, 255, 0.1)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Title
+      ctx.fillStyle = theme === 'light' ? '#1a1a1a' : '#ffffff';
+      ctx.font = 'bold 32px Inter, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('My Tasks', canvas.width / 2, contentY + 50);
+
+      // Draw tasks
+      const taskY = contentY + 100;
+      const taskHeight = 60;
+      const taskSpacing = 20;
+
+      tasks.forEach((task, index) => {
+        const y = taskY + (index * (taskHeight + taskSpacing));
+        
+        if (y + taskHeight > contentY + contentHeight - 40) return; // Don't overflow
+
+        // Task background
+        ctx.fillStyle = task.completed 
+          ? (theme === 'light' ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.2)')
+          : (theme === 'light' ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)');
+        ctx.roundRect(contentX + 40, y, contentWidth - 80, taskHeight, 12);
+        ctx.fill();
+
+        // Checkbox
+        const checkboxX = contentX + 60;
+        const checkboxY = y + 20;
+        const checkboxSize = 20;
+        
+        ctx.strokeStyle = task.completed 
+          ? '#22c55e' 
+          : (theme === 'light' ? '#666' : '#999');
+        ctx.lineWidth = 2;
+        ctx.strokeRect(checkboxX, checkboxY, checkboxSize, checkboxSize);
+        
+        if (task.completed) {
+          ctx.fillStyle = '#22c55e';
+          ctx.fillRect(checkboxX + 2, checkboxY + 2, checkboxSize - 4, checkboxSize - 4);
+          
+          // Checkmark
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(checkboxX + 5, checkboxY + 10);
+          ctx.lineTo(checkboxX + 9, checkboxY + 14);
+          ctx.lineTo(checkboxX + 15, checkboxY + 6);
+          ctx.stroke();
+        }
+
+        // Task text
+        ctx.fillStyle = task.completed 
+          ? (theme === 'light' ? '#666' : '#999')
+          : (theme === 'light' ? '#1a1a1a' : '#ffffff');
+        ctx.font = task.completed ? '18px Inter, sans-serif' : 'bold 18px Inter, sans-serif';
+        ctx.textAlign = 'left';
+        
+        const maxWidth = contentWidth - 160;
+        const text = task.text.length > 40 ? task.text.substring(0, 40) + '...' : task.text;
+        ctx.fillText(text, checkboxX + 40, y + 35);
+        
+        if (task.completed) {
+          // Strikethrough
+          ctx.strokeStyle = theme === 'light' ? '#999' : '#666';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(checkboxX + 40, y + 30);
+          ctx.lineTo(checkboxX + 40 + ctx.measureText(text).width, y + 30);
+          ctx.stroke();
+        }
+      });
+
+      // If no tasks, show empty state
+      if (tasks.length === 0) {
+        ctx.fillStyle = theme === 'light' ? '#666' : '#999';
+        ctx.font = '20px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('No tasks yet - ready to be productive!', canvas.width / 2, canvas.height / 2);
+      }
+
+      // Download the image
       const link = document.createElement('a');
-      link.download = `task-list-${new Date().toISOString().split('T')[0]}.jpg`;
-      link.href = canvas.toDataURL('image/jpeg', 0.9);
+      link.download = `beautiful-tasks-${new Date().toISOString().split('T')[0]}.png`;
+      link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (error) {
       console.error('Error generating screenshot:', error);
@@ -276,7 +399,8 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
           <p className="text-sm mb-8 opacity-70 max-w-64 mx-auto">Get started by adding your first task to begin tracking your pomodoro sessions</p>
           <Button
             onClick={() => setIsAddingTask(true)}
-            className="btn-primary"
+            variant="outline"
+            className="border-border/50 hover:border-border hover:bg-accent/50"
           >
             <Plus className="w-4 h-4 mr-2" />
             Add your first task
