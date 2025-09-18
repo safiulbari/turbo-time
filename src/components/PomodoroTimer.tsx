@@ -253,7 +253,7 @@ export default function PomodoroTimer({
         </div>
 
         {/* Controls */}
-        <div className="flex gap-4 justify-center mb-6">
+        <div className="flex gap-3 justify-center mb-6">
           <Button
             onClick={handleStartPause}
             className={`btn-primary px-8 py-3 ${
@@ -277,7 +277,7 @@ export default function PomodoroTimer({
             onClick={handleReset}
             variant="outline"
             size="icon"
-            className="w-12 h-12 rounded-xl"
+            className="w-12 h-12 rounded-xl border-border/50 hover:border-border hover:bg-accent/50"
           >
             <RotateCcw className="w-4 h-4" />
           </Button>

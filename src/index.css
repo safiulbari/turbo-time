@@ -160,11 +160,11 @@ All colors MUST be HSL.
   }
 
   .btn-ghost {
-    @apply bg-transparent hover:bg-secondary/40 text-muted-foreground hover:text-foreground font-medium rounded-lg px-3 py-2.5 transition-all duration-200 border border-transparent hover:border-border/30;
+    @apply bg-transparent hover:bg-secondary/40 text-muted-foreground hover:text-foreground font-medium rounded-lg px-3 py-2 transition-all duration-200 border border-transparent hover:border-border/30;
   }
 
   .btn-icon {
-    @apply bg-secondary/40 hover:bg-secondary/60 text-muted-foreground hover:text-foreground rounded-lg p-2.5 transition-all duration-200 border border-border/30 hover:border-border/50;
+    @apply bg-secondary/40 hover:bg-secondary/60 text-muted-foreground hover:text-foreground rounded-lg p-2 transition-all duration-200 border border-border/30 hover:border-border/50;
   }
   
   .gradient-text {

@@ -244,48 +244,48 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-lg font-semibold text-foreground">Tasks</h2>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button
             onClick={() => setIsAddingTask(true)}
-            variant="ghost"
+            variant="outline"
             size="sm"
-            className="btn-ghost"
+            className="border-border/50 hover:border-border hover:bg-accent/50"
           >
-            <Plus className="w-4 h-4 mr-1" />
+            <Plus className="w-4 h-4 mr-2" />
             Add Task
           </Button>
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="btn-icon"
+                className="w-9 h-9 p-0 border-border/50 hover:border-border hover:bg-accent/50"
               >
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48 bg-background/95 backdrop-blur-sm border border-border/50 shadow-xl">
+            <DropdownMenuContent align="end" className="w-48 bg-background border border-border shadow-xl z-50">
               <DropdownMenuItem 
                 onClick={() => toggleTheme('light')}
-                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors py-2.5"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors py-3 px-3"
               >
                 <Sunrise className="w-4 h-4 text-amber-500" />
                 Light Mode
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={() => toggleTheme('dark')}
-                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors py-2.5"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors py-3 px-3"
               >
                 <Moon className="w-4 h-4 text-slate-400" />
                 Dark Mode
               </DropdownMenuItem>
               <DropdownMenuItem 
                 onClick={generateScreenshot}
-                className="flex items-center gap-3 cursor-pointer hover:bg-accent/60 transition-colors border-t border-border/30 mt-1 pt-3"
+                className="flex items-center gap-3 cursor-pointer hover:bg-accent transition-colors border-t border-border/30 mt-1 pt-3 px-3"
               >
                 <Camera className="w-4 h-4 text-emerald-500" />
-                Screenshot (JPEG)
+                Screenshot
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -303,7 +303,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
             className="mb-4 bg-secondary/30 border-border/50 text-foreground placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30 transition-all duration-200 rounded-lg"
             autoFocus
           />
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             <Button onClick={addTask} className="btn-primary flex-1">
               Add Task
             </Button>
@@ -312,7 +312,8 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                 setIsAddingTask(false);
                 setNewTaskText('');
               }} 
-              className="btn-secondary"
+              variant="outline"
+              className="border-border/50 hover:border-border hover:bg-accent/50"
             >
               Cancel
             </Button>
@@ -354,7 +355,7 @@ export default function TodoList({ onTaskStart, activeTaskId }: TodoListProps) {
                 onClick={() => deleteTask(task.id)}
                 variant="ghost"
                 size="sm"
-                className="p-2 h-auto text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-lg opacity-0 group-hover:opacity-100"
+                className="w-8 h-8 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200 rounded-lg opacity-0 group-hover:opacity-100"
               >
                 <X className="w-3.5 h-3.5" />
               </Button>
